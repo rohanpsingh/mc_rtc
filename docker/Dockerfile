@@ -43,6 +43,7 @@ RUN cmake -S . -B build -G Ninja \
 FROM base AS runtime
 
 COPY --from=builder /usr/local /usr/local
+RUN ldconfig
 
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
