@@ -6,6 +6,7 @@ services:
     image: mc-rtc:latest
     container_name: mc-rtc-container
     volumes:
+      - ..:/workspace/mc_rtc
       - /tmp/.X11-unix:/tmp/.X11-unix
     environment:
       - DISPLAY=${DISPLAY:-:0}

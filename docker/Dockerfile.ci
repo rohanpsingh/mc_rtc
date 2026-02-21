@@ -5,7 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Install base dependencies
 RUN apt-get update && apt-get install -y \
     curl ca-certificates gnupg lsb-release \
-    build-essential cmake git
+    build-essential cmake ninja-build ccache git
 
 # Setup mc-rtc cloudsmith repository (head for latest deps)
 RUN curl -1sLf 'https://dl.cloudsmith.io/public/mc-rtc/head/setup.deb.sh' | bash

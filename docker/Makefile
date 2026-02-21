@@ -15,9 +15,12 @@ ci-test:
 	@docker compose -f docker-compose.ci.yml build
 	@echo "Running CI build..."
 	@docker compose -f docker-compose.ci.yml run --rm mc-rtc-ci \
-		bash -c "rm -rf build && mkdir -p build && cd build && \
-			cmake .. -DCMAKE_BUILD_TYPE=RelWithDebInfo && \
-			cmake --build . --config RelWithDebInfo && \
-			cmake --install . && \
-			ctest -V -C RelWithDebInfo && \
+		bash -c "rm -rf build && cmake -S . -B build -G Ninja \
+			-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+			-DCMAKE_C_COMPILER_LAUNCHER=ccache \
+			-DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+			-DPYTHON_BINDING=OFF && \
+			cmake --build build && \
+			cmake --install build && \
+			ctest --test-dir build -V && \
 			echo 'CI test passed!'"
