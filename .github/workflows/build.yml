@@ -86,6 +86,13 @@ jobs:
         ./utils/bootstrap-linux.sh
         git config --global user.email "arn.tanguy@gmail.com"
         git config --global user.name "Arnaud Tanguy (Automated CI update)"
+    - name: "[superbuild] Setup ROS environment"
+      if: matrix.os != 'windows-latest'
+      shell: bash
+      run: |
+        source /opt/ros/humble/setup.bash
+        echo "PYTHONPATH=${PYTHONPATH}" >> $GITHUB_ENV
+
     - name: "[superbuild] Install system dependencies"
       if: matrix.os != 'windows-latest'
       shell: bash
