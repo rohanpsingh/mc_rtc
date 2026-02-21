@@ -1,0 +1,9 @@
+services:
+  mc-rtc-ci:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.ci
+    image: mc-rtc-ci:latest
+    volumes:
+      - ..:/workspace
+    working_dir: /workspace
