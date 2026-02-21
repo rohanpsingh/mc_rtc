@@ -86,13 +86,6 @@ jobs:
         ./utils/bootstrap-linux.sh
         git config --global user.email "arn.tanguy@gmail.com"
         git config --global user.name "Arnaud Tanguy (Automated CI update)"
-    - name: "[superbuild] Setup ROS environment"
-      if: matrix.os != 'windows-latest'
-      shell: bash
-      run: |
-        source /opt/ros/humble/setup.bash
-        echo "PYTHONPATH=${PYTHONPATH}" >> $GITHUB_ENV
-
     - name: "[superbuild] Install system dependencies"
       if: matrix.os != 'windows-latest'
       shell: bash
@@ -104,6 +97,13 @@ jobs:
               -DINSTALL_DOCUMENTATION=ON \
               -DMC_RTC_SUPERBUILD_OVERRIDE_mc_rtc_GITHUB=${GITHUB_REPO_TRIGGER} \
               -DMC_RTC_SUPERBUILD_OVERRIDE_mc_rtc_GIT_TAG="origin/${GITHUB_BRANCH}"
+
+    - name: "[superbuild] Setup ROS environment"
+      if: matrix.os != 'windows-latest'
+      shell: bash
+      run: |
+        source /opt/ros/humble/setup.bash
+        echo "PYTHONPATH=${PYTHONPATH}" >> $GITHUB_ENV
 
     - name: "[superbuild] Install mc_rtc and related projects"
       if: matrix.os != 'windows-latest'
