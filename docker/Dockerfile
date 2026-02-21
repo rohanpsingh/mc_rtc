@@ -24,6 +24,21 @@ RUN apt-get update && apt-get install -y \
     mc-rtc-data \
     && rm -rf /var/lib/apt/lists/*
 
+# The cloudsmith Tasks 1.8.2 binary was compiled against RBDyn pre-1.9.3,
+# where rbd::Joint was 128 bytes. RBDyn 1.9.3 added Ir_/gr_ fields making
+# rbd::Joint 144 bytes, causing Tasks' nrVars to crash (wrong array stride).
+# Rebuild Tasks from source against the installed RBDyn 1.9.3.
+# /usr/local/lib is searched before /lib/x86_64-linux-gnu (via libc.conf),
+# so the rebuilt library takes precedence after ldconfig.
+RUN git clone --depth=1 --recurse-submodules --branch v1.8.2 https://github.com/jrl-umi3218/Tasks.git /tmp/Tasks && \
+    cmake -S /tmp/Tasks -B /tmp/Tasks/build -G Ninja \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DPYTHON_BINDING=OFF && \
+    cmake --build /tmp/Tasks/build && \
+    cmake --install /tmp/Tasks/build && \
+    ldconfig && \
+    rm -rf /tmp/Tasks
+
 # Build stage - uses local source code
 FROM base AS builder
 
