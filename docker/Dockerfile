@@ -11,14 +11,17 @@ RUN apt-get update && apt-get install -y \
     curl -1sLf 'https://dl.cloudsmith.io/public/mc-rtc/stable/setup.deb.sh' | bash && \
     rm -rf /var/lib/apt/lists/*
 
-# Install all dependencies in one layer (heavy but cached)
-# libmc-rtc-dev transitively installs all JRL libraries (Tasks, TVM, RBDyn, etc.)
-# mc-rtc-data provides robot/environment descriptions (JVRC1, etc.)
+# Install mc_rtc build dependencies
+# JRL libraries from cloudsmith, system libs from Ubuntu
 # libgeos++-inline-dev provides missing .inl files for Ubuntu 22.04 GEOS
+# mc-rtc-data provides robot/environment descriptions (JVRC1, etc.)
 RUN apt-get update && apt-get install -y \
     build-essential cmake ninja-build ccache git \
     libeigen3-dev libboost-all-dev libtinyxml2-dev \
-    libmc-rtc-dev mc-rtc-data libmesh-sampling-dev libgeos++-inline-dev \
+    libyaml-cpp-dev libspdlog-dev libnanomsg-dev libltdl-dev libnotify-dev \
+    libtasks-dev libtvm-dev libeigen-quadprog-dev libstate-observation-dev \
+    libndcurves-dev libmesh-sampling-dev libgeos++-inline-dev \
+    mc-rtc-data \
     && rm -rf /var/lib/apt/lists/*
 
 # Build stage - uses local source code
