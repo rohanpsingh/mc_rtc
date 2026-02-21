@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:22.04 AS base
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=en_US.UTF-8
@@ -21,14 +21,34 @@ RUN apt-get update && apt-get install -y \
     libmc-rtc-dev mc-rtc-data libmesh-sampling-dev libgeos++-inline-dev \
     && rm -rf /var/lib/apt/lists/*
 
-ENV DEBIAN_FRONTEND=
-ENV CMAKE_C_COMPILER_LAUNCHER=ccache
-ENV CMAKE_CXX_COMPILER_LAUNCHER=ccache
+# Build stage - uses local source code
+FROM base AS builder
+
+WORKDIR /workspace/mc_rtc
+
+COPY . .
+
+RUN cmake -S . -B build -G Ninja \
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+        -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+        -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+        -DPYTHON_BINDING=OFF && \
+    cmake --build build && \
+    cmake --install build
+
+# Runtime stage
+FROM base AS runtime
+
+COPY --from=builder /usr/local /usr/local
 
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 WORKDIR /workspace/mc_rtc
+
+ENV DEBIAN_FRONTEND=
+ENV CMAKE_C_COMPILER_LAUNCHER=ccache
+ENV CMAKE_CXX_COMPILER_LAUNCHER=ccache
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/bin/bash"]
